@@ -1,0 +1,12 @@
+name: "Terminal Interaktif ke Runner"
+
+on:
+  workflow_dispatch:    # Hanya jalan saat dijalankan manual dari UI GitHub
+
+jobs:
+  akses-terminal:
+    runs-on: ubuntu-latest   # Bisa ganti windows-latest / macos-latest
+    steps:
+      - name: Buka Tunnel Wush
+        uses: coder/wush-action@v1.0.0
+        timeout-minutes: 60   # Runner akan mati otomatis setelah 1 jam
