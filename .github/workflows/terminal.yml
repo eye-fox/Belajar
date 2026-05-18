@@ -1,25 +1,24 @@
-name: "Terminal Interaktif via PAT"
+name: "Web Terminal"
 
 on:
   workflow_dispatch:
 
 jobs:
-  terminal:
+  web-terminal:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.PAT }}   # 🔑 Pakai PAT dari secrets
-          persist-credentials: true
+      - name: Install tmate
+        run: |
+          curl -fsSL https://github.com/tmate-io/tmate/releases/download/2.4.0/tmate-2.4.0-static-linux-amd64.tar.xz | tar xJ
+          sudo mv tmate-2.4.0-static-linux-amd64/tmate /usr/local/bin/
 
-      - name: Setup Python (opsional)
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.x'
-
-      - name: Buka tmate session
-        uses: mxschmitt/action-tmate@v3
-        with:
-          limit-access-to-actor: true
-          timeout-minutes: 60
+      - name: Jalankan tmate
+        run: |
+          tmate -S /tmp/tmate.sock new-session -d
+          tmate -S /tmp/tmate.sock wait tmate-ready
+          echo "SSH connection string:"
+          tmate -S /tmp/tmate.sock display -p '#{tmate_ssh}'
+          echo ""
+          echo "Web URL (bisa di browser):"
+          tmate -S /tmp/tmate.sock display -p '#{tmate_web}'
+          sleep 3600  # Runner hidup selama 1 jam
