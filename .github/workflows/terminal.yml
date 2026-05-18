@@ -1,12 +1,25 @@
-name: "Terminal Interaktif ke Runner"
+name: "Terminal Interaktif via PAT"
 
 on:
-  workflow_dispatch:    # Hanya jalan saat dijalankan manual dari UI GitHub
+  workflow_dispatch:
 
 jobs:
-  akses-terminal:
-    runs-on: ubuntu-latest   # Bisa ganti windows-latest / macos-latest
+  terminal:
+    runs-on: ubuntu-latest
     steps:
-      - name: Buka Tunnel Wush
-        uses: coder/wush-action@v1.0.0
-        timeout-minutes: 60   # Runner akan mati otomatis setelah 1 jam
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.PAT }}   # 🔑 Pakai PAT dari secrets
+          persist-credentials: true
+
+      - name: Setup Python (opsional)
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.x'
+
+      - name: Buka tmate session
+        uses: mxschmitt/action-tmate@v3
+        with:
+          limit-access-to-actor: true
+          timeout-minutes: 60
